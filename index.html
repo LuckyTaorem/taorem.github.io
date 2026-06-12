@@ -50,34 +50,39 @@
 <body>
    <canvas id="neural-bg"></canvas>
   <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top d-flex justify-content-center align-items-center header-transparent">
-
-    <nav id="navbar" class="navbar">
-      <ul>
-        <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-        <li><a class="nav-link scrollto" href="#about">About</a></li>
-        <li><a class="nav-link scrollto" href="#resume">Resume</a></li>
-        <!-- <li><a class="nav-link scrollto" href="#shop">Shop</a></li>
-        <li><a class="nav-link scrollto" href="#blogs">Blogs</a></li> -->
-        <li><a class="nav-link scrollto" href="#internship-main">Internship</a></li>
-        <li><a class="nav-link scrollto" href="#project">Project</a></li>
-        <!-- <li><a class="nav-link scrollto" href="#play-games">Games</a></li> -->
-        <li><a class="nav-link scrollto" href="#github">GitHub Repo</a></li>
-        <li><a class="nav-link scrollto" href="#certificate">Certificate</a></li>
-        <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
-      </ul>
-      <i class="bi bi-list mobile-nav-toggle"></i>
-    </nav><!-- .navbar -->
-    <div class="header-actions">
-      <label class="theme-switch" for="theme-toggle">
-        <input type="checkbox" id="theme-toggle" />
-        <div class="slider round">
-          <i class="bi bi-sun-fill sun"></i>
-          <i class="bi bi-moon-fill moon"></i>
+  <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+    <div class="container d-flex justify-content-between align-items-center">
+      
+      <div class="logo">
         </div>
-      </label>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+          <li><a class="nav-link scrollto" href="#about">About</a></li>
+          <li><a class="nav-link scrollto" href="#resume">Resume</a></li>
+          <li><a class="nav-link scrollto" href="#internship-main">Internship</a></li>
+          <li><a class="nav-link scrollto" href="#project">Project</a></li>
+          <li><a class="nav-link scrollto" href="#github">GitHub Repo</a></li>
+          <li><a class="nav-link scrollto" href="#certificate">Certificate</a></li>
+          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-right d-flex align-items-center" style="gap: 15px;">
+        <div class="header-actions">
+          <label class="theme-switch" for="theme-toggle">
+            <input type="checkbox" id="theme-toggle" />
+            <div class="slider round">
+              <i class="bi bi-sun-fill sun"></i>
+              <i class="bi bi-moon-fill moon"></i>
+            </div>
+          </label>
+        </div>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </div>
+
     </div>
-    
   </header><!-- End Header -->
 
   <!-- ======= Hero Section ======= -->
@@ -959,7 +964,7 @@ document.addEventListener("DOMContentLoaded", function() {
   <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
 </svg></a>
         <a href="https://www.facebook.com/luckytaorem5/" class="facebook"><i class="bi bi-facebook"></i></a>
-        <a href="https://www.instagram.com/luckytaorem5/" class="instagram"><i class="bi bi-instagram"></i></a>
+        <a href="https://www.instagram.com/____taorem/" class="instagram"><i class="bi bi-instagram"></i></a>
         <a href="https://github.com/LuckyTaorem" class="github"><i class="bi bi-github"></i></a>
         <a href="https://www.linkedin.com/in/luckytaorem/" class="linkedin"><i class="bi bi-linkedin"></i></a>
                   </div>
@@ -1070,7 +1075,7 @@ document.addEventListener("DOMContentLoaded", function() {
               </svg>
             </a>
             <a href="https://www.facebook.com/luckytaorem5/" class="facebook" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-            <a href="https://www.instagram.com/luckytaorem5/" class="instagram" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.instagram.com/____taorem/" class="instagram" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
             <a href="https://github.com/LuckyTaorem" class="github" aria-label="GitHub"><i class="bi bi-github"></i></a>
             <a href="https://www.linkedin.com/in/luckytaorem/" class="linkedin" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
           </div>
@@ -1480,20 +1485,6 @@ fetchRepos();
       }
     },
     {
-      "@type": "Organization",
-      "name": "Taorem Blog Games",
-      "url": "https://blogs.taoremtls.in/games",
-      "logo": "https://luckytaorem.github.io/assets/img/icon.webp",
-      "founder": {
-        "@type": "Person",
-        "name": "Taorem Lucky Singh"
-      },
-      "description": "Taorem Blog Games is a creative portal featuring browser-based games, interactive experiments, and playful web experiences built by Lucky Taorem using HTML, CSS, and JavaScript.",
-      "sameAs": [
-        "https://blogs.taoremtls.in/games"
-      ]
-    },
-    {
       "@type": "WebSite",
       "name": "Lucky Taorem Portfolio",
       "url": "https://luckytaorem.github.io",
@@ -1502,12 +1493,6 @@ fetchRepos();
         "name": "Taorem Lucky Singh"
       },
       "description": "Portfolio of Taorem Lucky Singh showcasing web projects, resume, certifications, and design tools built around discoverability and performance."
-    },
-    {
-      "@type": "WebPage",
-      "name": "Taorem Blog",
-      "url": "https://blogs.taorem.in/",
-      "description": "Technical blog by Lucky Taorem featuring tutorials, SEO tips, and web development insights focused on performance, branding, and discoverability."
     },
     {
       "@type": "WebPage",
@@ -1653,14 +1638,20 @@ document.getElementById('contactForm').addEventListener('submit', async function
 
   <div id="ai-chat-window" class="ai-chat-window hidden">
     <div class="chat-header">
-      <div class="chat-title">
-        <i class="bi bi-stars" style="color: var(--cyan);"></i>
-        <div>
-          <h4 style="margin:0; font-size:1rem; color:#fff;">Lucky's Assistant</h4>
-          <span style="font-size:0.7rem; color:#00ff88;">● Online</span>
+      <div class="chat-profile">
+        <div class="chat-avatar">
+          <i class="bi bi-robot"></i>
+          <span class="status-dot"></span> </div>
+        
+        <div class="chat-info">
+          <h4>Lucky's Assistant</h4>
+          <span>Online</span>
         </div>
       </div>
-      <button id="close-chat-btn" style="background:none; border:none; color:#aaa; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+      
+      <button id="close-chat-btn" aria-label="Close chat">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
     
     <div id="chat-messages" class="chat-messages">

@@ -36,6 +36,10 @@
   --meta-text: #888;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 /* --- REPO SECTION STYLES --- */
 section.services {
     background-color: var(--bg-color);
@@ -349,6 +353,7 @@ section.services {
   height: 30px;
   position: relative;
   width: 60px;
+  margin: 0; /* Clears any accidental margins causing misalignment */
 }
 
 .theme-switch input {
@@ -356,8 +361,8 @@ section.services {
 }
 
 .slider {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--border-color);
+  background-color: #e2e8f0; 
+  border: 1px solid #cbd5e1;
   bottom: 0;
   cursor: pointer;
   left: 0;
@@ -369,50 +374,77 @@ section.services {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 6px;
+  
+  /* CHANGED: Increased padding from 6px to 8px to perfectly center the icons */
+  padding: 0 8px; 
 }
 
 /* Icons inside the slider */
 .slider .bi {
   font-size: 14px;
-  z-index: 1;
+  z-index: 3; 
+  position: relative; 
   transition: 0.4s;
-  color: #fff;
+  
+  /* CHANGED: This removes the invisible text-spacing that pushes the icon down */
+  line-height: 0; 
+  display: flex;
+  align-items: center;
 }
 
-.sun { opacity: 0; transform: rotate(-90deg); }
-.moon { opacity: 1; }
+.sun { 
+  opacity: 1; 
+  transform: rotate(0); 
+  color: #ffffff; /* CHANGED: Crisp white sun on top of the yellow circle */ 
+} 
+.moon { 
+  opacity: 0; 
+  transform: rotate(90deg); 
+  color: #ffffff; 
+}
 
 /* The Moving Circle */
 .slider:before {
-  background-color: var(--primary);
+  background-color: #fbbf24; /* Sun Yellow */
+  box-shadow: 0 0 10px #fbbf24;
   bottom: 3px;
   content: "";
   height: 22px;
   left: 4px;
   position: absolute;
-  transition: .4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy effect */
+  transition: .4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
   width: 22px;
   border-radius: 50%;
   z-index: 2;
-  box-shadow: 0 0 10px var(--primary);
 }
 
 /* --- CHECKED STATE (Light Mode) --- */
 input:checked + .slider {
-  background-color: #e2e8f0;
-  border-color: #cbd5e1;
+  background-color: rgba(255, 255, 255, 0.1); /* Dark mode dark-glass */
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Move circle to the right and turn it purple/cyan */
 input:checked + .slider:before {
   transform: translateX(30px);
-  background-color: #fbbf24; /* Yellow sun color */
-  box-shadow: 0 0 10px #fbbf24;
+  background-color: var(--primary); 
+  box-shadow: 0 0 10px var(--primary);
 }
 
-/* Icon Animation on Toggle */
-input:checked + .slider .sun { opacity: 1; transform: rotate(0); color: #d97706; }
-input:checked + .slider .moon { opacity: 0; transform: rotate(90deg); }
+/* Dark Mode Icon Visibility */
+input:checked + .slider .sun { opacity: 0; transform: rotate(-90deg); }
+input:checked + .slider .moon { opacity: 1; transform: rotate(0); color: #fff; }
+
+.mobile-nav-toggle {
+  color: var(--text-color); /* Match theme text color instead of white */
+  font-size: 32px; /* Slightly larger for easier tapping */
+  cursor: pointer;
+  display: none;
+  line-height: 0;
+  transition: 0.5s;
+  margin: 0; /* Reset margins to ensure perfect alignment with pill */
+}
+
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
@@ -459,28 +491,33 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   visibility: hidden;
   opacity: 0;
-  right: 20px; /* Aligns perfectly with the center of the 60px chat button */
-  bottom: 15px; 
+  right: 25px;
+  bottom: 85px; /* ALWAYS 85px from the bottom so it never overlaps the chat */
   z-index: 996;
   background: var(--form-button);
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%; /* Changed to a circle for a modern look */
+  transition: all 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .back-to-top i {
-  font-size: 28px;
-  color: var(--a-text);
+  font-size: 24px;
+  color: #fff !important;
   line-height: 0;
+}
+
+.back-to-top.active {
+  visibility: visible;
+  opacity: 1;
 }
 .back-to-top:hover {
   background: var(--form-button-hover);
   color: var(--a-text);
-}
-.back-to-top.active {
-  visibility: visible;
-  opacity: 1;
 }
 
 /*--------------------------------------------------------------
@@ -611,16 +648,75 @@ h1, h2, h3, h4, h5, h6 {
   transition: 0.5s;
 }
 
+/* =======================================================
+   FIXED MOBILE MENU & OVERLAY
+   ======================================================= */
 @media (max-width: 1040px) {
-  .mobile-nav-toggle {
-    display: block;
-  }
+  
+  /* Your working layout fix */
   #header {
     justify-content: flex-start !important;
     padding-left: 20px;
-}
+  }
+
+  .mobile-nav-toggle {
+    display: block;
+    z-index: 9999; /* Keeps the Hamburger/X button on top of the glass overlay */
+    position: relative;
+  }
+  
+  /* Hide standard desktop menu */
   .navbar ul {
     display: none;
+  }
+
+  /* --- THE OPEN MOBILE MENU (GLASSMORPHISM) --- */
+  .navbar.navbar-mobile {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(15, 15, 20, 0.95); /* Deep dark glass */
+    backdrop-filter: blur(15px);
+    z-index: 9998; /* Sits just underneath the close button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  /* Layout for the links inside the mobile menu */
+  /* --- FIX: Force the list background to be transparent --- */
+  .navbar.navbar-mobile ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background: transparent !important; /* Overrides the template's white box */
+    width: 100%;
+  }
+
+  /* --- FIX: Force the links to be white --- */
+  .navbar.navbar-mobile a,
+  .navbar.navbar-mobile ul li a {
+    font-size: 1.5rem !important;
+    color: #ffffff !important; /* Overrides the template's dark gray text */
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    text-decoration: none !important;
+  }
+
+  /* Highlight active/hovered links */
+  .navbar.navbar-mobile a:hover,
+  .navbar.navbar-mobile ul li a:hover,
+  .navbar.navbar-mobile .active,
+  .navbar.navbar-mobile li:hover > a {
+    color: var(--cyan) !important;
   }
 }
 .navbar-mobile {
@@ -1761,10 +1857,9 @@ hr {
 /* --- AI CHAT WIDGET --- */
 .ai-chat-wrapper { 
   position: fixed; 
-  bottom: 15px; 
-  right: 20px; /* Aligned with back-to-top */
+  bottom: 20px; 
+  right: 20px; 
   z-index: 9999; 
-  transition: bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
 }
 
 /* Pushes chat up when back-to-top appears */
@@ -1772,40 +1867,41 @@ hr {
   bottom: 70px; 
 }
 .ai-chat-btn { 
-  background: linear-gradient(135deg, var(--primary), #00f3ff); 
-  color: #fff; 
-  border: none; 
-  border-radius: 30px; /* Changed to pill shape */
-  padding: 12px 24px;  /* Added padding for text */
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  font-weight: 700;
-  font-size: 1rem;
-  font-family: var(--font-body, "Open Sans", sans-serif);
+  background: linear-gradient(135deg, #7000ff, #00f3ff) !important; /* Hardcoded hex so light mode doesn't break it */
+  color: #ffffff !important; /* Force white text */
+  border: none !important; 
+  border-radius: 30px !important; 
+  padding: 12px 24px !important;  
+  display: flex !important; 
+  align-items: center !important; 
+  gap: 8px !important; 
+  font-weight: 700 !important;
+  font-size: 15px !important;
   cursor: pointer; 
-  box-shadow: 0 5px 20px rgba(112, 0, 255, 0.4); 
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  animation: aiPulse 2.5s infinite; /* Adds the subtle glow pulse */
+  box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3) !important; /* Softer shadow for light mode */
+  transition: all 0.3s ease !important;
 }
 
-/* Stops pulsing when hovered and lifts slightly */
+.ai-chat-btn i {
+  font-size: 1.3rem !important;
+  color: #ffffff !important;
+}
+
 .ai-chat-btn:hover { 
-  transform: translateY(-5px) scale(1.05); 
-  box-shadow: 0 8px 25px rgba(0, 243, 255, 0.6);
-  animation: none; 
+  transform: translateY(-3px) scale(1.02) !important; 
+  box-shadow: 0 6px 20px rgba(0, 243, 255, 0.5) !important;
 }
 .ai-chat-window { 
   position: absolute; 
-  bottom: 80px; 
+  bottom: 60px; /* Snaps right above the pill */
   right: 0; 
-  width: 380px;  /* Increased width */
-  height: 550px; /* Increased height */
+  width: 360px;  
+  height: 500px; 
   background: rgba(15, 15, 20, 0.95); 
   backdrop-filter: blur(15px); 
-  border: 1px solid rgba(255, 255, 255, 0.1); 
+  border: 1px solid rgba(255, 255, 255, 0.15); 
   border-radius: 16px; 
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
   display: flex; 
   flex-direction: column; 
   transition: opacity 0.3s, transform 0.3s, visibility 0.3s; 
@@ -1814,7 +1910,7 @@ hr {
 
 .ai-chat-window.hidden { 
   opacity: 0; 
-  transform: scale(0.5) translate(50px, 50px); 
+  transform: scale(0.8) translateY(20px); /* ONLY moves down, never to the right! */
   visibility: hidden; 
   pointer-events: none;
 }
@@ -1846,7 +1942,89 @@ hr {
   background: var(--primary); 
 }
 
-.chat-header { padding: 15px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
+.chat-header {
+  padding: 15px 20px;
+  background: rgba(20, 22, 26, 0.95); /* Deep dark background */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Perfect spacing between avatar and text */
+}
+
+/* The Circular Profile Picture */
+.chat-avatar {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--primary), #00f3ff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 243, 255, 0.2);
+}
+
+/* The native "Online" overlay dot */
+.status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 0px;
+  width: 12px;
+  height: 12px;
+  background-color: #00ff88;
+  border: 2.5px solid rgba(20, 22, 26, 1); /* Matches header background to create a cutout effect */
+  border-radius: 50%;
+}
+
+.chat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-info h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.chat-info span {
+  font-size: 0.75rem;
+  color: #00ff88; /* Keeps the green online text */
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Circular Close Button with Hover Animation */
+#close-chat-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #a0aab2;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#close-chat-btn:hover {
+  background: rgba(255, 95, 86, 0.15); /* Soft red background on hover */
+  color: #ff5f56; /* Red X */
+  transform: rotate(90deg); /* Playful twist interaction */
+}
+
 .chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 .msg { padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; max-width: 85%; }
 .bot-msg { background: rgba(255,255,255,0.1); color: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 2px; }
@@ -1856,10 +2034,28 @@ hr {
 #chat-input:focus { border-color: var(--form-button); }
 #send-chat-btn { background: var(--primary); color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; transition: background 0.3s; }
 
+/* --- MOBILE RESPONSIVENESS FIXES --- */
 @media (max-width: 500px) {
+  
+  /* Lock the wrapper safely away from the edge */
+  .ai-chat-wrapper {
+    right: 15px !important;
+    bottom: 15px !important;
+  }
+
+  /* Make the button slightly smaller for phones */
+  .ai-chat-btn {
+    padding: 10px 16px !important; 
+    font-size: 0.9rem !important;
+  }
+
+  /* Lock the chat window to the screen width minus safety margins */
   .ai-chat-window {
-    width: 90vw;
-    height: 70vh;
-    right: -5px; 
+    width: 320px !important; /* Fallback */
+    max-width: calc(100vw - 30px) !important; /* Absolutely prevents horizontal bleeding */
+    height: 60vh !important;
+    max-height: 500px !important;
+    right: 0 !important; 
+    bottom: 60px !important; /* Snaps exactly above the mobile pill */
   }
 }

@@ -147,11 +147,33 @@ if (currentTheme) {
   /**
    * Mobile nav toggle
    */
-  on('click', '.mobile-nav-toggle', function(e) {
-    select('#navbar').classList.toggle('navbar-mobile')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
-  })
+ document.addEventListener("DOMContentLoaded", () => {
+  const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+  const navbar = document.querySelector('#navbar');
+
+  if (mobileNavToggle) {
+    mobileNavToggle.addEventListener('click', function() {
+      // Toggle the menu visibility class
+      navbar.classList.toggle('navbar-mobile');
+      
+      // Swap the icon from Hamburger (bi-list) to Close (bi-x)
+      this.classList.toggle('bi-list');
+      this.classList.toggle('bi-x');
+    });
+  }
+
+  // Auto-close the mobile menu when a navigation link is clicked
+  const navLinks = document.querySelectorAll('#navbar .nav-link');
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (navbar.classList.contains('navbar-mobile')) {
+        navbar.classList.remove('navbar-mobile');
+        mobileNavToggle.classList.remove('bi-x');
+        mobileNavToggle.classList.add('bi-list');
+      }
+    });
+  });
+});
 
   /**
    * Mobile nav dropdowns activate
@@ -397,14 +419,3 @@ function openGameWindow(url) {
   gameWin.document.close();
 }
 
-window.addEventListener('scroll', () => {
-    const chatWrapper = document.querySelector('.ai-chat-wrapper');
-    if (chatWrapper) {
-        // Match the 100px threshold used by your back-to-top button
-        if (window.scrollY > 100) {
-            chatWrapper.classList.add('shifted');
-        } else {
-            chatWrapper.classList.remove('shifted');
-        }
-    }
-});
