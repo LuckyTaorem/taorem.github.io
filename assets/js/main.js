@@ -235,6 +235,85 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(() => {
       container.innerHTML = '<p style="text-align:center;">Failed to load games.</p>';
     });
+
+
+    const terminalText = document.getElementById("terminal-text");
+  if (!terminalText) return;
+
+  const codeSnippet = `> Executing LuckyOS startup sequence...
+> Loading WordPress core & Elementor modules... [OK]
+> Integrating international payment gateways... [SECURE]
+> Running technical SEO audit & injecting Schema... [OPTIMIZED]
+> Compiling Java and Python scripts... 
+> System ready. Awaiting new challenges...`;
+
+  let i = 0;
+  function typeWriter() {
+    if (i < codeSnippet.length) {
+      terminalText.innerHTML += codeSnippet.charAt(i) === '\n' ? '<br>' : codeSnippet.charAt(i);
+      i++;
+      setTimeout(typeWriter, Math.random() * 50 + 20); // Random typing speed
+    }
+  }
+
+  // Start typing after a short delay
+  setTimeout(typeWriter, 1500);
+
+
+  const chatBtn = document.getElementById("ai-chat-btn");
+  const chatWindow = document.getElementById("ai-chat-window");
+  const closeBtn = document.getElementById("close-chat-btn");
+  const chatInput = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-chat-btn");
+  const messagesContainer = document.getElementById("chat-messages");
+
+  // 👉 REPLACE THIS WITH YOUR RENDER URL (Keep the /chat at the end)
+  const API_URL = "https://portfolio-chatbot-583v.onrender.com/chat";
+
+  chatBtn.addEventListener("click", () => chatWindow.classList.toggle("hidden"));
+  closeBtn.addEventListener("click", () => chatWindow.classList.add("hidden"));
+
+  async function handleSendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user-msg");
+    chatInput.value = "";
+    const typingId = addMessage("Typing...", "bot-msg", true);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+
+      if (!response.ok) throw new Error("Server error");
+      const data = await response.json();
+      
+      document.getElementById(typingId).remove();
+      addMessage(data.reply, "bot-msg");
+
+    } catch (error) {
+      document.getElementById(typingId).remove();
+      addMessage("Server is waking up or offline. Please try again later!", "bot-msg");
+    }
+  }
+
+  sendBtn.addEventListener("click", handleSendMessage);
+  chatInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") handleSendMessage();
+  });
+
+  function addMessage(text, className, isTyping = false) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `msg ${className}`;
+    msgDiv.innerHTML = text;
+    if (isTyping) msgDiv.id = "typing-indicator";
+    messagesContainer.appendChild(msgDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    return msgDiv.id;
+  }
 });
 
 function openGameWindow(url) {
@@ -317,3 +396,15 @@ function openGameWindow(url) {
         `);
   gameWin.document.close();
 }
+
+window.addEventListener('scroll', () => {
+    const chatWrapper = document.querySelector('.ai-chat-wrapper');
+    if (chatWrapper) {
+        // Match the 100px threshold used by your back-to-top button
+        if (window.scrollY > 100) {
+            chatWrapper.classList.add('shifted');
+        } else {
+            chatWrapper.classList.remove('shifted');
+        }
+    }
+});

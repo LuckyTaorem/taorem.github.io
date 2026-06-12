@@ -86,6 +86,19 @@
       <h1 class="name">Taorem Lucky Singh</h1>
       <h2>I'm an <span class="typed-text"></span></h2>
       <a href="/LuckyTaorem.pdf" download class="btn"><i class="bi bi-cloud-arrow-down-fill"></i> Download CV</a>
+      <div class="terminal-window fade-in-up" data-aos="fade-up" data-aos-delay="300">
+  <div class="terminal-header">
+    <div class="terminal-buttons">
+      <span class="close"></span>
+      <span class="minimize"></span>
+      <span class="maximize"></span>
+    </div>
+    <div class="terminal-title">automation_script.py</div>
+  </div>
+  <div class="terminal-body">
+    <pre><code id="terminal-text"></code><span class="cursor">_</span></pre>
+  </div>
+</div>
       <a href="#about" class="btn-scroll scrollto" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
     </div>
   </section><!-- End Hero -->
@@ -245,6 +258,11 @@
 
             <h3 class="resume-title">My Project</h3>
             <div id="projects">
+                <div class="resume-item">
+                  <h4>Secure Passkey Vault: Encrypted File Sharing</h4>
+        <p><em>A secure, passkey-authenticated web application for seamless file storage and sharing, featuring AES-256 encryption at rest, drag-and-drop uploads, and secure token-based shareable links.</em></p>
+    </div>
+
                 <div class="resume-item">
                     <h4>All-in-One Hub: Bookmarks, Classifieds & More | LinkyDoo</h4>
                     <p><em>LinkyDoo is a comprehensive SEO tool that allows users to generate a wide variety of backlinks from a single platform.</em></p>
@@ -566,6 +584,19 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
 
         <div class="row">
+
+          <div class="col-md-6 col-lg-4 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in" data-aos-delay="200">
+            <div class="icon-box">
+              <div><img src="assets/img/secureVault.png" style="width:100%; height:60%; object-fit: cover;" alt="secure file upload sharing app created By Taorem Lucky Singh"></div>
+              <br>
+              <h4 class="title">
+                <a href="https://uploadgo.luckytaorem.epizy.com/" target="_blank">
+                  Secure Passkey Vault: Encrypted File Sharing
+                  </a>
+              </h4>
+              <p class="description">A robust, secure file-sharing platform featuring fast passkey authentication, server-side AES-256 encryption to safely store all file types, an interactive drag-and-drop interface, and encrypted URL tokens for safe sharing.</p>
+            </div>
+        </div>
             
             <div class="col-md-6 col-lg-4 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in" data-aos-delay="100">
             <!-- <a href="https://luckytaorem.github.io/linkydoo/" target="_blank"> -->
@@ -1060,95 +1091,133 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <script>
     let page = 1;
-    const username = 'LuckyTaorem';
+const username = 'LuckyTaorem';
 
-    function fetchRepos() {
-        const outputDiv = document.getElementById('output');
+const CACHE_DURATION = 12 * 60 * 60 * 1000; 
+
+function fetchRepos() {
+    const outputDiv = document.getElementById('output');
+    // Create a unique cache key for each page
+    const cacheKey = `github_repos_${username}_page_${page}`;
+    
+    outputDiv.innerHTML = `<div class="col-12 text-center" style="color:var(--text-color)">Loading repositories...</div>`;
+
+    // 1. Check Local Storage first
+    const cachedItem = localStorage.getItem(cacheKey);
+    if (cachedItem) {
+        const { timestamp, data } = JSON.parse(cachedItem);
         
-        // Show a temporary loading state (Optional but professional)
-        outputDiv.innerHTML = `<div class="col-12 text-center" style="color:var(--text-color)">Loading repositories...</div>`;
-
-        fetch(`https://api.github.com/users/${username}/repos?page=${page}&per_page=6&sort=created&direction=desc`)
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                // Secondary sort (API usually handles this, but this ensures exact order)
-                data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-                let output = '';
-                
-                data.forEach(repo => {
-                    // Handle null descriptions
-                    const description = repo.description ? repo.description : "No description provided for this repository.";
-                    // Handle null language
-                    const language = repo.language ? repo.language : "Code";
-
-                    output += `
-                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4" data-aos="fade-up">
-                        <div class="repo-card">
-                            <div class="repo-header">
-                                <h5 class="repo-title">${repo.name}</h5>
-                                <i class="bi bi-github" style="font-size: 1.2rem; color: var(--text-color);"></i>
-                            </div>
-                            
-                            <p class="repo-description">${description}</p>
-                            
-                            <div class="repo-meta">
-                                <div class="meta-item">
-                                    <span class="language-dot"></span>
-                                    <span>${language}</span>
-                                </div>
-                                <div class="meta-item" title="Stars">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
-                                    </svg>
-                                    <span>${repo.stargazers_count}</span>
-                                </div>
-                                <div class="meta-item" title="Forks">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M10 0a2 2 0 1 1-4 0V4a2 2 0 1 1 4 0V0zM6.5 6a1.5 1.5 0 0 0-1.06 2.56V13H3V9.5a.5.5 0 0 0-1 0V13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9.5a.5.5 0 0 0-1 0V13H9.56A1.5 1.5 0 0 0 8.5 6h-2z"/>
-                                    </svg>
-                                    <span>${repo.forks_count}</span>
-                                </div>
-                                
-                                <a href="${repo.html_url}" target="_blank" class="repo-link-btn">
-                                    View <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-left:4px; margin-bottom:2px;"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                });
-
-                outputDiv.innerHTML = output;
-
-                // Simple Pagination Logic
-                document.getElementById('pagination').innerHTML = `
-                    <li class="page-item ${page === 1 ? 'disabled' : ''}"><a class="page-link" href="#" id="prev">Previous</a></li>
-                    <li class="page-item disabled"><a class="page-link" href="#">${page}</a></li>
-                    <li class="page-item ${data.length < 6 ? 'disabled' : ''}"><a class="page-link" href="#" id="next">Next</a></li>
-                `;
-            })
-            .catch(error => {
-                console.error(error);
-                outputDiv.innerHTML = `<p class="text-center" style="color:red">Error loading repositories.</p>`;
-            });
+        // Check if the cache is still fresh (under 24 hours old)
+        if (Date.now() - timestamp < CACHE_DURATION) {
+            console.log("Loading GitHub Repos from Browser Cache!");
+            renderRepos(data);
+            return; // Stop here, no API call needed!
+        }
     }
 
-    document.getElementById('pagination').addEventListener('click', (e) => {
-        e.preventDefault(); // Stop anchor jump
-        if (e.target.id === 'prev' && page > 1) {
-            page--;
-            fetchRepos();
-        } else if (e.target.id === 'next') {
-            page++;
-            fetchRepos();
-        }
+    // 2. If no cache or cache is expired, make the API call
+    fetch(`https://api.github.com/users/${username}/repos?page=${page}&per_page=6&sort=created&direction=desc`)
+        .then(response => {
+            if (response.status === 403 || response.status === 429) {
+                throw new Error('GitHub API Rate Limit Exceeded.');
+            }
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Secondary sort
+            data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            // 3. Save the fresh data and current time to Local Storage
+            localStorage.setItem(cacheKey, JSON.stringify({
+                timestamp: Date.now(),
+                data: data
+            }));
+
+            renderRepos(data);
+        })
+        .catch(error => {
+            console.error(error);
+            // 4. SMART FALLBACK: If API fails (e.g., rate limit), but we have old cache, show it!
+            if (cachedItem) {
+                console.log("API failed. Falling back to expired cache.");
+                const { data } = JSON.parse(cachedItem);
+                renderRepos(data);
+            } else {
+                outputDiv.innerHTML = `<p class="text-center" style="color:red">Error loading repositories: ${error.message}</p>`;
+            }
+        });
+}
+
+// I separated the rendering logic into its own function to keep things clean
+function renderRepos(data) {
+    const outputDiv = document.getElementById('output');
+    let output = '';
+    
+    data.forEach(repo => {
+        const description = repo.description ? repo.description : "No description provided for this repository.";
+        const language = repo.language ? repo.language : "Code";
+
+        output += `
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4" data-aos="fade-up">
+            <div class="repo-card">
+                <div class="repo-header">
+                    <h5 class="repo-title">${repo.name}</h5>
+                    <i class="bi bi-github" style="font-size: 1.2rem; color: var(--text-color);"></i>
+                </div>
+                
+                <p class="repo-description">${description}</p>
+                
+                <div class="repo-meta">
+                    <div class="meta-item">
+                        <span class="language-dot"></span>
+                        <span>${language}</span>
+                    </div>
+                    <div class="meta-item" title="Stars">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                        </svg>
+                        <span>${repo.stargazers_count}</span>
+                    </div>
+                    <div class="meta-item" title="Forks">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10 0a2 2 0 1 1-4 0V4a2 2 0 1 1 4 0V0zM6.5 6a1.5 1.5 0 0 0-1.06 2.56V13H3V9.5a.5.5 0 0 0-1 0V13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9.5a.5.5 0 0 0-1 0V13H9.56A1.5 1.5 0 0 0 8.5 6h-2z"/>
+                        </svg>
+                        <span>${repo.forks_count}</span>
+                    </div>
+                    
+                    <a href="${repo.html_url}" target="_blank" class="repo-link-btn">
+                        View <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-left:4px; margin-bottom:2px;"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        `;
     });
 
-    fetchRepos();
+    outputDiv.innerHTML = output;
+
+    document.getElementById('pagination').innerHTML = `
+        <li class="page-item ${page === 1 ? 'disabled' : ''}"><a class="page-link" href="#" id="prev">Previous</a></li>
+        <li class="page-item disabled"><a class="page-link" href="#">${page}</a></li>
+        <li class="page-item ${data.length < 6 ? 'disabled' : ''}"><a class="page-link" href="#" id="next">Next</a></li>
+    `;
+}
+
+// Pagination Click Event
+document.getElementById('pagination').addEventListener('click', (e) => {
+    e.preventDefault(); 
+    if (e.target.id === 'prev' && page > 1) {
+        page--;
+        fetchRepos();
+    } else if (e.target.id === 'next') {
+        page++;
+        fetchRepos();
+    }
+});
+
+// Initialize
+fetchRepos();
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -1574,7 +1643,35 @@ document.getElementById('contactForm').addEventListener('submit', async function
     });
   });
 </script>
-</body>
 
+<!-- Ask My AI Widget -->
+<div class="ai-chat-wrapper">
+  <button id="ai-chat-btn" class="ai-chat-btn" aria-label="Ask My AI">
+    <i class="bi bi-robot" style="font-size: 1.3rem;"></i>
+    <span class="ai-btn-text">Ask Me!</span>
+  </button>
+
+  <div id="ai-chat-window" class="ai-chat-window hidden">
+    <div class="chat-header">
+      <div class="chat-title">
+        <i class="bi bi-stars" style="color: var(--cyan);"></i>
+        <div>
+          <h4 style="margin:0; font-size:1rem; color:#fff;">Lucky's Assistant</h4>
+          <span style="font-size:0.7rem; color:#00ff88;">● Online</span>
+        </div>
+      </div>
+      <button id="close-chat-btn" style="background:none; border:none; color:#aaa; cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    </div>
+    
+    <div id="chat-messages" class="chat-messages">
+      <div class="msg bot-msg">Hi! I'm trained on Lucky's resume. Ask me about his tech stack, WordPress experience, or projects!</div>
+    </div>
+    
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Ask anything..." autocomplete="off">
+      <button id="send-chat-btn"><i class="bi bi-send-fill"></i></button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
