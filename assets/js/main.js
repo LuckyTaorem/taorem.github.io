@@ -173,6 +173,209 @@ if (currentTheme) {
       }
     });
   });
+
+
+  const terminalCloseBtn = document.querySelector('.terminal-buttons .close');
+  const terminalWindow = document.querySelector('.terminal-window');
+
+  // If both exist on the page, add the click listener
+  if (terminalCloseBtn && terminalWindow) {
+    terminalCloseBtn.addEventListener('click', () => {
+      // Add the 'closed' class to trigger the CSS fade-out animation
+      terminalWindow.classList.add('closed');
+    });
+  }
+
+  // Background:
+    const canvas = document.getElementById('neural-bg');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    // Configuration - Optimized & Colorful
+    const config = {
+      particleCount: 80,
+      particleBaseSize: 2.5,  // Slightly larger to show off colors
+      connectDistance: 130,
+      mouseRadius: 150,
+      speed: 0.5,
+      // Vibrant but professional color palettes (RGB values)
+      paletteLight: ['236, 72, 153', '59, 130, 246', '16, 185, 129', '139, 92, 246'], // Pink, Blue, Emerald, Purple
+      paletteDark: ['244, 114, 182', '96, 165, 250', '52, 211, 153', '167, 139, 250'],
+      accentLight: '112, 0, 255',
+      accentDark: '0, 243, 255'
+    };
+
+    let particles = [];
+    let mouse = { x: null, y: null };
+    let lastScrollY = window.scrollY || document.documentElement.scrollTop;
+
+    // Theme Setup
+    let currentPalette = config.paletteDark;
+    let currentLineColor = config.accentDark;
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.attributeName === "class") updateTheme();
+      });
+    });
+    observer.observe(document.body, { attributes: true });
+
+    function updateTheme() {
+      if (document.body.classList.contains('light-mode')) {
+        currentPalette = config.paletteLight;
+        currentLineColor = config.accentLight;
+      } else {
+        currentPalette = config.paletteDark;
+        currentLineColor = config.accentDark;
+      }
+    }
+    updateTheme();
+
+    // Event Listeners
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
+    // Scroll Interaction Effect
+    window.addEventListener('scroll', () => {
+      let currentScrollY = window.scrollY || document.documentElement.scrollTop;
+      let scrollDelta = currentScrollY - lastScrollY;
+      lastScrollY = currentScrollY;
+
+      // Apply scroll momentum to particles
+      particles.forEach(p => {
+        p.vy -= scrollDelta * 0.03; // Push particles based on scroll speed
+        
+        // FIX: Moved inside the loop! Teleports dots to the other side if pushed off screen
+        if (p.y < 0) p.y += height;
+        if (p.y > height) p.y -= height;
+      });
+    });
+
+    window.addEventListener('resize', init);
+
+    // Particle Class
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        // Store base speed to recover from scroll momentum
+        this.baseVx = (Math.random() - 0.5) * config.speed;
+        this.baseVy = (Math.random() - 0.5) * config.speed;
+        this.vx = this.baseVx;
+        this.vy = this.baseVy;
+        this.size = Math.random() * config.particleBaseSize + 1.5;
+        // Assign a random color from the palette
+        this.colorIndex = Math.floor(Math.random() * currentPalette.length);
+      }
+
+      update() {
+        // Smoothly recover from scroll pushes back to normal speed
+        this.vy += (this.baseVy - this.vy) * 0.05;
+
+        // Move particles
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // FIX: X-Axis (Sides) - Bounce, but prevent getting trapped in the wall
+        if (this.x < 0) { this.x = 0; this.vx *= -1; this.baseVx *= -1; }
+        if (this.x > width) { this.x = width; this.vx *= -1; this.baseVx *= -1; }
+
+        // FIX: Y-Axis (Top/Bottom) - Wrap around infinitely instead of bouncing
+        if (this.y < 0) { this.y += height; }
+        if (this.y > height) { this.y -= height; }
+
+        // Mouse Interaction (Push away slightly)
+        if (mouse.x !== null) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < config.mouseRadius) {
+            let forceDirectionX = dx / distance;
+            let forceDirectionY = dy / distance;
+            let force = (config.mouseRadius - distance) / config.mouseRadius;
+
+            this.x -= forceDirectionX * force * 2;
+            this.y -= forceDirectionY * force * 2;
+          }
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        // Draw colorful dots with low opacity so they don't distract
+        ctx.fillStyle = `rgba(${currentPalette[this.colorIndex]}, 0.6)`;
+        ctx.fill();
+      }
+    }
+
+    function init() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      particles = [];
+
+      for (let i = 0; i < config.particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Update and draw all particles
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+
+        // Connect particles to each other
+        for (let j = i + 1; j < particles.length; j++) {
+          let dx = particles[i].x - particles[j].x;
+          let dy = particles[i].y - particles[j].y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < config.connectDistance) {
+            let opacity = 1 - (distance / config.connectDistance);
+            ctx.beginPath();
+            // Lines stay subtle and uniform to keep text readable
+            ctx.strokeStyle = `rgba(${currentLineColor}, ${opacity * 0.25})`;
+            ctx.lineWidth = 1;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+
+        // Connect particles to mouse
+        if (mouse.x !== null) {
+          let dx = particles[i].x - mouse.x;
+          let dy = particles[i].y - mouse.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < config.mouseRadius) {
+            let opacity = 1 - (distance / config.mouseRadius);
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(${currentLineColor}, ${opacity * 0.5})`;
+            ctx.lineWidth = 1.2;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
 });
 
   /**
@@ -314,7 +517,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       
       document.getElementById(typingId).remove();
-      addMessage(data.reply, "bot-msg");
+      const formattedReply = formatBotText(data.reply);
+      addMessage(formattedReply, "bot-msg");
 
     } catch (error) {
       document.getElementById(typingId).remove();
@@ -419,3 +623,81 @@ function openGameWindow(url) {
   gameWin.document.close();
 }
 
+function formatBotText(text) {
+  // 1. Detect and format standard URLs and Social Links
+  const urlRegex = /(https?:\/\/[^\s()]+)|((?:www\.)?(?:linkedin\.com|github\.com|facebook\.com|instagram\.com|x\.com|twitter\.com)[^\s()]*)/gi;
+  
+  let formattedText = text.replace(urlRegex, function(url) {
+    let href = url;
+    if (!href.match(/^https?:\/\//i)) {
+      href = 'https://' + href;
+    }
+    href = href.replace(/[.,;:]$/, '');
+    let display = url.replace(/[.,;:]$/, '');
+    
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer">${display}</a>`;
+  });
+
+  // 2. Detect and format Email Addresses (mailto:)
+  const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+  
+  formattedText = formattedText.replace(emailRegex, function(email) {
+    // Clean up any trailing punctuation just in case
+    let cleanEmail = email.replace(/[.,;:]$/, ''); 
+    // Wrap in a mailto: link
+    return `<a href="mailto:${cleanEmail}">${cleanEmail}</a>`;
+  });
+
+  // 3. NEW: Detect internal portfolio links (e.g., #contact, #hero)
+  // This looks for a hashtag followed by letters/hyphens
+  const anchorRegex = /(#[a-zA-Z0-9_-]+)/g;
+  
+  formattedText = formattedText.replace(anchorRegex, function(anchor) {
+    let cleanAnchor = anchor.replace(/[.,;:]$/, ''); 
+    // Uses the "scrollto" class so it smoothly scrolls down your page!
+    return `<a href="${cleanAnchor}" class="scrollto" onclick="document.querySelector('${cleanAnchor}').scrollIntoView({behavior: 'smooth'}); return false;">${cleanAnchor}</a>`;
+  });
+
+  return formattedText;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+  const currentTheme = localStorage.getItem('theme');
+
+  // Helper function to force Dark Mode
+  function enableDarkMode() {
+    document.body.classList.remove('light-mode');
+    document.body.removeAttribute('data-theme'); // Or set it: document.body.setAttribute('data-theme', 'dark');
+    if (toggleSwitch) toggleSwitch.checked = true;
+  }
+
+  // Helper function to force Light Mode
+  function enableLightMode() {
+    document.body.classList.add('light-mode');
+    document.body.setAttribute('data-theme', 'light'); // This triggers your CSS data-theme!
+    if (toggleSwitch) toggleSwitch.checked = false;
+  }
+
+  // 1. On Page Load: Check memory or default to Dark
+  if (currentTheme === 'light') {
+    enableLightMode();
+  } else {
+    // If it's their first time (null) or they chose dark, force Dark Mode
+    enableDarkMode();
+    localStorage.setItem('theme', 'dark'); 
+  }
+
+  // 2. Listen for the user clicking the switch
+  if (toggleSwitch) {
+    toggleSwitch.addEventListener('change', function(e) {
+      if (e.target.checked) {
+        enableDarkMode();
+        localStorage.setItem('theme', 'dark');
+      } else {
+        enableLightMode();
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  }
+});

@@ -1,23 +1,4 @@
 :root {
-  --bg-color: #ffffff;
-  --toggle-bg: #ccc;
-  --toggle-circle: #ffffff;
-  --heading-bg: #eef0f2;
-  --section-title: #3b434a;
-  --text-color: #444444;
-  --h3-title: #3b434a;
-  --h5-background: #eef0f2;
-  --icon-box-background: #ffffff;
-  --card-border: #e0e0e0; /* Added for definition */
-  --a-text: #111;
-  --box-shadow: 0px 5px 15px rgba(214, 215, 216, 0.4);
-  --form-color: rgb(255, 255, 255);
-  --form-button: #ffb727;
-  --form-button-hover: #ffc85a;
-  --meta-text: #666;
-}
-
-[data-theme="dark"] {
   --bg-color: #121212;
   --toggle-bg: #444;
   --toggle-circle: #f5f5f5;
@@ -36,8 +17,32 @@
   --meta-text: #888;
 }
 
+[data-theme="light"] {
+  --bg-color: #ffffff;
+  --toggle-bg: #ccc;
+  --toggle-circle: #ffffff;
+  --heading-bg: #eef0f2;
+  --section-title: #3b434a;
+  --text-color: #444444;
+  --h3-title: #3b434a;
+  --h5-background: #eef0f2;
+  --icon-box-background: #ffffff;
+  --card-border: #e0e0e0; /* Added for definition */
+  --a-text: #111;
+  --box-shadow: 0px 5px 15px rgba(214, 215, 216, 0.4);
+  --form-color: rgb(255, 255, 255);
+  --form-button: #ffb727;
+  --form-button-hover: #ffc85a;
+  --meta-text: #666;
+}
+
 html, body {
   overflow-x: hidden;
+}
+
+/* Optional: Add a very faint dark glass effect to sections so your text stays easy to read over the moving dots */
+#about{
+  background-color: transparent;
 }
 
 /* --- REPO SECTION STYLES --- */
@@ -456,15 +461,16 @@ body {
 canvas#neural-bg {
   position: fixed;
   top: 0;
+  opacity: 0.6;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* Puts it behind text */
-  pointer-events: none; /* Allows clicking through it */
-  opacity: 1;
-  z-index: 1;
-  transition: opacity 0.3s ease;
+  z-index: 0; 
+  pointer-events: none; /* Let clicks pass through to your buttons */
 }
+
+/* 2. Bring your website's content FORWARD to sit on top of the canvas */
+
 
 /* Optional: Slight fade in Light Mode if it's too distracting */
 body.light-mode canvas#neural-bg {
@@ -818,6 +824,7 @@ h1,h2,h3,h4,h5,span,p,a,img,.product-card,.cert-card,.repo-card,.icon-box,.card-
   align-items: center;
   flex-direction: column;
   padding: 0 15px;
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 #hero h1 {
   margin: 0 0 10px 0;
@@ -1095,6 +1102,67 @@ hr {
   height: 10px;
   transition: 0.9s;
   background-color: #ffb727;
+}
+
+/* =======================================================
+   ABOUT SECTION MOBILE FIXES
+   ======================================================= */
+@media (max-width: 991px) {
+  
+  /* 1. Shrink and center the massive image */
+  .about .image {
+    min-height: 300px !important; /* Forces it to be much shorter on phones */
+    height: 300px !important;
+    width: 100% !important;
+    max-width: 350px !important; /* Prevents it from stretching too wide */
+    margin: 0 auto 30px auto !important; /* Centers it perfectly */
+    background-position: center top !important; /* Keeps your face in frame */
+    border-radius: 15px; /* Adds a nice modern curve */
+  }
+
+  /* 2. Fix the list spacing and alignment */
+  .about .content ul {
+    padding-left: 0;
+    margin-bottom: 20px;
+  }
+
+  .about .content ul li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+
+  /* 3. Align the bold labels so they look like a clean table */
+  .about .content ul li strong {
+    min-width: 90px; /* Ensures all the labels line up vertically */
+    margin-right: 10px;
+  }
+
+  /* 4. Force long URLs and Emails to wrap instead of breaking the layout */
+  .about .content ul li span {
+    word-break: break-word; /* Wraps the email/website to the next line */
+    overflow-wrap: break-word;
+    flex: 1; /* Allows the text to fill the remaining space neatly */
+  }
+
+  /* Centers the Technical section title on mobile */
+  .about .content .section-title {
+    text-align: center;
+    margin-top: 20px;
+  }
+}
+
+/* Extra tweak for very small phones (like iPhone SE) */
+@media (max-width: 400px) {
+  .about .content ul li {
+    flex-direction: column; /* Stacks the label and the answer */
+    margin-bottom: 15px;
+  }
+  .about .content ul li strong {
+    margin-bottom: 5px;
+    color: var(--cyan); /* Highlights the label when stacked */
+  }
 }
 
 /*--------------------------------------------------------------
@@ -1807,6 +1875,45 @@ hr {
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   overflow: hidden;
   backdrop-filter: blur(10px);
+  
+  /* NEW: Forces GPU rendering to stop buttons from lagging */
+  transform: translateZ(0); 
+  will-change: transform, opacity, max-height;
+  
+  /* NEW: max-height added so it can collapse smoothly when closed */
+  max-height: 500px; 
+  transition: all 0.4s ease, transform 0.4s ease, max-height 0.4s ease 0.2s, margin 0.4s ease 0.2s, visibility 0.4s;
+  transform-origin: center;
+}
+
+.terminal-window.closed {
+  max-height: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  opacity: 0;
+  visibility: hidden;
+  padding: 0 !important;
+  border: none !important;
+}
+
+#hero.terminal-closed .hero-container {
+  /* This moves the content naturally if you are using flexbox */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh; /* Takes full screen height */
+  padding-top: 0 !important; /* Forces content to move up */
+  justify-content: center !important; /* Aligns content to middle */
+}
+
+/* Ensure these are ALWAYS visible */
+#hero h1.name, 
+#hero h2, 
+#hero a.btn {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  transition: none;
 }
 
 .terminal-header {
@@ -1819,18 +1926,48 @@ hr {
 
 .terminal-buttons {
   display: flex;
-  gap: 8px;
+  gap: 8px; /* Exact macOS spacing */
+  align-items: center;
 }
 
+/* Base shape for all three buttons */
 .terminal-buttons span {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 8px; 
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.6); 
+  /* NEW: Removed 'all' so they don't fight the parent shrinking animation */
+  transition: background-color 0.2s ease, filter 0.2s ease;
 }
 
-.close { background: #ff5f56; }
-.minimize { background: #ffbd2e; }
-.maximize { background: #27c93f; }
+.terminal-buttons .close { background-color: #ff5f56; border: 1px solid #e0443e; }
+.terminal-buttons .minimize { background-color: #ffbd2e; border: 1px solid #dea123; }
+.terminal-buttons .maximize { background-color: #27c93f; border: 1px solid #1aab29; }
+
+.terminal-buttons span::before {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.terminal-buttons .close::before { content: "✕"; }
+.terminal-buttons .minimize::before { content: "−"; font-size: 10px; }
+.terminal-buttons .maximize::before { content: "＋"; }
+
+/* 2. The Magic Hover: Show icons ONLY when hovering the group */
+.terminal-buttons:hover span::before {
+  opacity: 1;
+}
+
+/* Optional: Slight darken on active click for tactile feel */
+.terminal-buttons span:active {
+  filter: brightness(0.8);
+}
 
 .terminal-title {
   margin: 0 auto;
@@ -2026,7 +2163,30 @@ hr {
 }
 
 .chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.msg { padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; max-width: 85%; }
+.msg { 
+  padding: 10px 14px; 
+  border-radius: 12px; 
+  font-size: 0.9rem; 
+  line-height: 1.4; 
+  max-width: 85%; 
+  /* --- ADD THESE 3 LINES TO FIX OVERFLOW --- */
+  word-break: break-word; 
+  overflow-wrap: break-word;
+  white-space: pre-wrap; /* Keeps the AI's line breaks intact! */
+}
+
+/* --- ADD THIS TO MAKE LINKS LOOK CLICKABLE --- */
+.bot-msg a {
+  color: #00f3ff; /* A nice bright cyan */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.bot-msg a:hover {
+  color: #ffffff;
+}
 .bot-msg { background: rgba(255,255,255,0.1); color: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 2px; }
 .user-msg { background: var(--form-button); color: #000; font-weight: 500; align-self: flex-end; border-bottom-right-radius: 2px; }
 .chat-input-area { padding: 15px; background: rgba(0,0,0,0.3); display: flex; gap: 10px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
@@ -2057,5 +2217,24 @@ hr {
     max-height: 500px !important;
     right: 0 !important; 
     bottom: 60px !important; /* Snaps exactly above the mobile pill */
+  }
+
+  .terminal-window {
+    width: 100% !important;
+    max-width: calc(100vw - 30px) !important; /* Leaves a 15px gap on each side */
+    margin: 40px auto 40px auto !important; /* Centers it and adds space below */
+  }
+
+  /* 2. Make the text smaller and force it to wrap */
+  .terminal-body {
+    padding: 15px !important; /* Slightly less padding to save space */
+  }
+
+  .terminal-body pre, 
+  .terminal-body code {
+    font-size: 11px !important; /* Smaller text for mobile */
+    white-space: pre-wrap !important; /* CRITICAL: Forces text to wrap instead of scrolling right */
+    word-break: break-word !important; 
+    overflow-x: hidden !important; /* Hides any remaining horizontal overflow */
   }
 }
